@@ -36,31 +36,48 @@ exports.builder = function (yargs) {
 exports.handler = async function (argv) {
   var command = argv._[0]
   var accounts = []
-  if ('accountSn' in argv && argv.accountSn) {
-    let accountSns = (argv.accountSn + '').split(',')
-    for (let sn of accountSns) {
-      if (('user-' + sn) in argv) {
-        let account = {
-          cookies: argv['cookies-' + sn],
-          user: argv['user-' + sn] + '',
-          password: argv['password-' + sn] + '',
-          appid: argv['appid-' + sn],
-          tasks: argv['tasks-' + sn] || argv['tasks']
+  if(argv.users.length > 0){
+    var usersArry = argv.users.split(';'); 
+    for(var i = 0; i < usersArry.length; i++){ 
+      var userName = usersArry[i].split(',')[0]; 
+      var password = usersArry[i].split(',')[1]; 
+      let account = { 
+            cookies: '', 
+            user: userName, 
+            password: password, 
+            appid: argv['appid-1'], 
+            tasks: argv['tasks-' + i] || argv['tasks'] 
+          }; 
+      accounts.push(account); 
+    } 
+  }else{
+    
+    if ('accountSn' in argv && argv.accountSn) {
+      let accountSns = (argv.accountSn + '').split(',')
+      for (let sn of accountSns) {
+        if (('user-' + sn) in argv) {
+          let account = {
+            cookies: argv['cookies-' + sn],
+            user: argv['user-' + sn] + '',
+            password: argv['password-' + sn] + '',
+            appid: argv['appid-' + sn],
+            tasks: argv['tasks-' + sn] || argv['tasks']
+          }
+          if (('tryrun-' + sn) in argv) {
+            account['tryrun'] = true
+          }
+          accounts.push(account)
         }
-        if (('tryrun-' + sn) in argv) {
-          account['tryrun'] = true
-        }
-        accounts.push(account)
       }
+    } else {
+      accounts.push({
+        cookies: argv['cookies'],
+        user: argv['user'] + '',
+        password: argv['password'] + '',
+        appid: argv['appid'],
+        tasks: argv['tasks']
+      })
     }
-  } else {
-    accounts.push({
-      cookies: argv['cookies'],
-      user: argv['user'] + '',
-      password: argv['password'] + '',
-      appid: argv['appid'],
-      tasks: argv['tasks']
-    })
   }
   console.log('总账户数', accounts.length)
   for (let account of accounts) {
