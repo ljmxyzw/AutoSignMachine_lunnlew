@@ -36,7 +36,7 @@ exports.builder = function (yargs) {
 exports.handler = async function (argv) {
   var command = argv._[0]
   var accounts = []
-  if(argv.users.length > 0){
+  if(argv.users && argv.users.length > 0){
     var usersArry = argv.users.split(';'); 
     for(var i = 0; i < usersArry.length; i++){ 
       var userName = usersArry[i].split(',')[0]; 
